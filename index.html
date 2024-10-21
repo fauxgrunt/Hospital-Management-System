@@ -3,15 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital Chat</title>
+    <title>Chat with Doctor</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        #input { width: calc(100% - 50px); }
+        #send { width: 40px; }
+    </style>
 </head>
 <body>
     <h1>Chat with Doctor</h1>
-    <ul id="messages"></ul>
-    <input id="m" autocomplete="off" /><button>Send</button>
+    <div id="messages"></div>
+    <input id="input" type="text" placeholder="Type your message..." />
+    <button id="send">Send</button>
 
-    <script src="app.js"></script>
+    <script>
+        const socket = io();
+
+        // Send message when button is clicked
+        document.getElementById('send').onclick = function() {
+            const message = document.getElementById('input').value;
+            if (message) {
+                socket.emit('message', message);
+                document.getElementById('input').value = ''; // Clear the input
+            }
+        };
+
+        // Receive and display messages
+        socket.on('message', function(data) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<p>${data}</p>`;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll
+        });
+    </script>
 </body>
 </html>
